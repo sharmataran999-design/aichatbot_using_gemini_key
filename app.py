@@ -18,10 +18,10 @@ if not api_key:
 if "client" not in st.session_state:
     st.session_state.client = genai.Client(api_key=api_key)
 
-# Initialize chat session with gemini-2.0-flash
+# Initialize chat session with currently active gemini-2.5-flash
 if "chat" not in st.session_state:
     st.session_state.chat = st.session_state.client.chats.create(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         config=types.GenerateContentConfig(
             system_instruction="You are a helpful, friendly, and concise AI assistant."
         )
