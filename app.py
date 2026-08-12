@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from google import genai
-from google.genai import types
 
 # Page configuration
 st.set_page_config(page_title="Gemini Assistant", page_icon="🤖", layout="centered")
@@ -34,20 +33,18 @@ if prompt := st.chat_input("Type your message..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate assistant response
+    # Generate assistant response using Interactions API
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         
         try:
-            # Generate content using gemini-2.5-flash
-            response = st.session_state.client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
+            interaction = st.session_state.client.interactions.create(
+                input=prompt
             )
             
-            full_response = response.text
+            full_response = interaction.text
             response_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
         except Exception as e:
-            st.error(f"Detailed Error: {e}")
+            st.error(f"Error: {e}")
