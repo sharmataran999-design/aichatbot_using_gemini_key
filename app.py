@@ -6,7 +6,7 @@ from google import genai
 st.set_page_config(page_title="Gemini Assistant", page_icon="🤖", layout="centered")
 st.title("🤖 Gemini AI Assistant")
 
-# Safely retrieve API Key from either Environment or Streamlit Secrets
+# Safely retrieve API Key
 api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
@@ -33,17 +33,17 @@ if prompt := st.chat_input("Type your message..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate assistant response using Interactions API
+    # Generate assistant response
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         
         try:
             interaction = st.session_state.client.interactions.create(
-                model="gemini-2.5-flash",
+                model="gemini-3.6-flash",
                 input=prompt
             )
             
-            full_response = interaction.text
+            full_response = interaction.output_text
             response_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
