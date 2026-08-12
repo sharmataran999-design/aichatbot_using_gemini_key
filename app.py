@@ -14,10 +14,11 @@ if not api_key:
     st.error("Please set your GEMINI_API_KEY in Streamlit Secrets.")
     st.stop()
 
-# Initialize client and persistent chat session in Streamlit state
+# Initialize GenAI client
 if "client" not in st.session_state:
     st.session_state.client = genai.Client(api_key=api_key)
 
+# Initialize chat session with gemini-2.0-flash
 if "chat" not in st.session_state:
     st.session_state.chat = st.session_state.client.chats.create(
         model="gemini-2.0-flash",
@@ -48,7 +49,6 @@ if prompt := st.chat_input("Type your message..."):
         full_response = ""
         
         try:
-            # Stream response chunks in real-time
             response_stream = st.session_state.chat.send_message_stream(prompt)
             for chunk in response_stream:
                 if chunk.text:
@@ -58,4 +58,4 @@ if prompt := st.chat_input("Type your message..."):
             response_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
-            st.error(f"API Error: {e}")
+            st.error(f"Response Error: {e}")
