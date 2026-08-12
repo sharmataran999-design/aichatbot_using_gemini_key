@@ -39,6 +39,7 @@ if prompt := st.chat_input("Type your message..."):
         
         try:
             interaction = st.session_state.client.interactions.create(
+                model="gemini-2.5-flash",
                 input=prompt
             )
             
