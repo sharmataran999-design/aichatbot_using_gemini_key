@@ -7,10 +7,11 @@ from google.genai import types
 st.set_page_config(page_title="Gemini Assistant", page_icon="🤖", layout="centered")
 st.title("🤖 Gemini AI Assistant")
 
-# Get API key from environment
-api_key = os.environ.get("GEMINI_API_KEY")
+# Safely retrieve API Key from either Environment or Streamlit Secrets
+api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
+
 if not api_key:
-    st.error("Please set your GEMINI_API_KEY environment variable.")
+    st.error("Please set your GEMINI_API_KEY in Streamlit Secrets.")
     st.stop()
 
 # Initialize client and persistent chat session in Streamlit state
@@ -46,14 +47,15 @@ if prompt := st.chat_input("Type your message..."):
         response_placeholder = st.empty()
         full_response = ""
         
-        # Stream response chunks in real-time
-        response_stream = st.session_state.chat.send_message_stream(prompt)
-        for chunk in response_stream:
-            if chunk.text:
-                full_response += chunk.text
-                response_placeholder.markdown(full_response + "▌")
-        
-        response_placeholder.markdown(full_response)
-
-    # Save assistant message to history
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+        try:
+            # Stream response chunks in real-time
+            response_stream = st.session_state.chat.send_message_stream(prompt)
+            for chunk in response_stream:
+                if chunk.text:
+                    full_response += chunk.text
+                    response_placeholder.markdown(full_response + "▌")
+            
+            response_placeholder.markdown(full_response)
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+        except Exception as e:
+            st.error(f"API Error: {e}")
